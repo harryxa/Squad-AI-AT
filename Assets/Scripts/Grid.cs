@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour 
 {
+	public bool onlyDisplayPath;
 	//public Transform player;
 	public LayerMask unwalkableMask;
 	//defines area in world coords that grid will cover
@@ -24,6 +25,13 @@ public class Grid : MonoBehaviour
 		gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 
 		CreateGrid ();
+	}
+
+	public int MaxSize
+	{
+		get{
+			return gridSizeX * gridSizeY;
+		}
 	}
 
 	void CreateGrid()
@@ -93,29 +101,41 @@ public class Grid : MonoBehaviour
 	{
 		Gizmos.DrawWireCube (transform.position, new Vector3 (gridWorldSize.x, 1, gridWorldSize.y));
 
-		if (grid != null) 
-		{
-			//Node playerNode = NodeFromWorldPoint (player.position);
-				
-			foreach (Node n in grid) 
-			{
-				//set colour of gizmos. If collision then red
-				Gizmos.color = (n.walkable) ? Color.white : Color.red;
-
-				if (path != null) 
-				{
-					if (path.Contains (n)) 
-					{
-						Gizmos.color = Color.black;
-					}
+		if (onlyDisplayPath) {
+			if (path != null) {
+				foreach (Node n in path) {
+					Gizmos.color = Color.black;
+					Gizmos.DrawCube (n.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
 				}
-				//if (playerNode == n) 
-				//{
-				//	Gizmos.color = Color.blue;
-				//}
-				Gizmos.DrawCube (n.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+			}
+		} else {
+			if (grid != null) 
+			{
+				//Node playerNode = NodeFromWorldPoint (player.position);
+
+				foreach (Node n in grid) 
+				{
+					//set colour of gizmos. If collision then red
+					Gizmos.color = (n.walkable) ? Color.white : Color.red;
+
+					if (path != null) 
+					{
+						if (path.Contains (n)) 
+						{
+							Gizmos.color = Color.black;
+						}
+					}
+					//if (playerNode == n) 
+					//{
+					//	Gizmos.color = Color.blue;
+					//}
+					Gizmos.DrawCube (n.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+				}
 			}
 		}
+
+
+
 	}
 
 }
