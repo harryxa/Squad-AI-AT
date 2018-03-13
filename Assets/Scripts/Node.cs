@@ -8,7 +8,9 @@ public class Node : IHeapItem<Node>
 	public bool walkable;
 	//position of node in world
 	public Vector3 worldPosition;
-	public int gridX;
+
+    //
+    public int gridX;
 	public int gridY;
 
 	public int gCost;
@@ -26,6 +28,7 @@ public class Node : IHeapItem<Node>
 		gridY = _gridY;
 	}
 
+    //returns fcost, which is g + h
 	public int fCost
 	{
 		get { return gCost + hCost; }
@@ -43,6 +46,7 @@ public class Node : IHeapItem<Node>
 		}
 	}
 
+    //compares towo nodes f cost
 	public int CompareTo(Node nodeToCompare)
 	{
 		int compare = fCost.CompareTo (nodeToCompare.fCost);

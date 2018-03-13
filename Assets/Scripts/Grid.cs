@@ -5,7 +5,6 @@ using UnityEngine;
 public class Grid : MonoBehaviour 
 {
 	public bool displayGridGizmos;
-	//public Transform player;
 	public LayerMask unwalkableMask;
 	//defines area in world coords that grid will cover
 	public Vector2 gridWorldSize;
@@ -63,14 +62,17 @@ public class Grid : MonoBehaviour
 		{
 			for (int y = -1; y <= 1; y++) 
 			{
+                //if node is iteself continue
 				if (x == 0 && y == 0)
 					continue;
 
 				int checkX = node.gridX + x;
 				int checkY = node.gridY + y;
 
+                //if inside of the grid
 				if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
 				{
+                    //add node to neighbour
 					neighbours.Add (grid [checkX, checkY]);
 				}
 			}
@@ -102,7 +104,6 @@ public class Grid : MonoBehaviour
 
 			if (grid != null && displayGridGizmos) 
 			{
-				//Node playerNode = NodeFromWorldPoint (player.position);
 
 				foreach (Node n in grid) 
 				{
