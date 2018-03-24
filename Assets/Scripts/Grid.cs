@@ -10,7 +10,7 @@ public class Grid : MonoBehaviour
 	public Vector2 gridWorldSize;
 	//space node covers
 	public float nodeRadius;
-	Node[,] grid;
+	public Node[,] grid;
 
 	//used for working out how many nodes fit into grid
 	float nodeDiameter;
@@ -110,7 +110,7 @@ public class Grid : MonoBehaviour
 					//set colour of gizmos. If collision then red
 					Gizmos.color = (n.walkable) ? Color.white : Color.red;
 
-					Gizmos.DrawCube (n.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+					Gizmos.DrawCube (n.nodeWorldPosition, Vector3.one * (nodeDiameter - 0.1f));
 				}
 			}
 	}
