@@ -9,7 +9,7 @@ public class Unit : MonoBehaviour
     public bool selected = false;
 
 	public Vector3 target;
-	float speed = 5f;
+	float speed = 15f;
 	public Vector3[] path;
 	int targetIndex;
    
