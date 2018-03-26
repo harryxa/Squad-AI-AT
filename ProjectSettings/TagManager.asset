@@ -7,6 +7,7 @@ TagManager:
   - A*
   - Overseer
   - Ground
+  - Unit
   layers:
   - Default
   - TransparentFX

@@ -2,47 +2,60 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-public class Unit : MonoBehaviour {
-
+public class Unit : MonoBehaviour
+{
+    public Vector2 screenPos;
+    public bool onScreen = false;
+    public bool selected = false;
 
 	public Vector3 target;
 	float speed = 5f;
 	public Vector3[] path;
 	int targetIndex;
+   
+    private int walkSpeedId;
 
-    public bool stopMoving; 
-    private Grid grid; 
+    public bool stopMoving;
+    private Grid grid;   
+
+    public Vector3 currentWaypoint; 
 
     public enum MoveFSM
     {
+        empty,
         findPosition,
         recalculatePath,
-        move
+		move,
+        moveToTarget
     }
 
     public MoveFSM moveFSM; 
 
 	void Start()
-    {
-        grid = GameObject.FindGameObjectWithTag("A*").GetComponent<Grid>();
+    {       
+        grid = GameObject.FindGameObjectWithTag("A*").GetComponent<Grid>();       
     }
 
     void Update()
-    {
-        if (Input.GetMouseButtonDown(1) )
-        {
-            GetInteraction();
-        }
-        MoveStates();
+    { 
+		MoveStates();
     }
 
     public void MoveStates()
     {
         switch (moveFSM)
         {
-            case MoveFSM.findPosition:
+            case MoveFSM.empty:
+                break; 
 
+            case MoveFSM.findPosition:
+                {
+                    RemoveUnitFromUnitManagerMovingUnitsList();
+                    PathManager.RequestPath(transform.position, target, OnPathFound);
+                    moveFSM = MoveFSM.move; 
+                }
                 break;
+
             case MoveFSM.recalculatePath:
                 {
                     Node targetNode = grid.NodeFromWorldPoint(target);
@@ -54,16 +67,16 @@ public class Unit : MonoBehaviour {
                     }
                     else if (targetNode.walkable == true)
                     {
-                        Debug.Log("target node is walkable");
                         stopMoving = false;
                         PathManager.RequestPath(transform.position, target, OnPathFound);
                         moveFSM = MoveFSM.move;
                     }
                 }
                 break;
-            case MoveFSM.move:
-                Move();
-                break;       
+
+            case MoveFSM.moveToTarget:
+                MoveToTarget(); 
+                break;
         }
     }
 
@@ -73,7 +86,7 @@ public class Unit : MonoBehaviour {
         {
 			path = newPath;
 			targetIndex = 0;
-            RemoveUnitFromUnitManagerMovingUnitsList();
+
             UnitManager.instance.movingUnits.Add(this.gameObject);
             StopCoroutine("FollowPath");
 			StartCoroutine("FollowPath");
@@ -87,7 +100,6 @@ public class Unit : MonoBehaviour {
         Node incrementedNode = originalNode;
         for (int x = 0; x < incrementedNode.gridX; x++)
         {
-            // Debug.Log("x: " + incrementedNode.gridX + " incremented node - 1: " + (incrementedNode.gridX - 1));
             incrementedNode = grid.grid[incrementedNode.gridX - 1, incrementedNode.gridY];
 
             if (incrementedNode.walkable == true)
@@ -102,15 +114,18 @@ public class Unit : MonoBehaviour {
 
     }
 
-    public void Move()
+    public void MoveToTarget()
     {
-
+        if(transform.position != target)
+        {
+            transform.rotation = Quaternion.LookRotation(target - transform.position);
+            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+        }
     }
-
 
 	IEnumerator FollowPath()
     {
-		Vector3 currentWaypoint = path[0];
+        currentWaypoint = path[0];
 		while (true)
         {
 			if (transform.position == currentWaypoint)
@@ -118,48 +133,18 @@ public class Unit : MonoBehaviour {
 				targetIndex ++;
 				if (targetIndex >= path.Length)
                 {
-					yield break;
-				}
-                else if (stopMoving == true)
-                {
+                    moveFSM = MoveFSM.moveToTarget; 
                     yield break;
-                }
-                currentWaypoint = path[targetIndex];
-			}
-
-			transform.position = Vector3.MoveTowards(transform.position,currentWaypoint,speed * Time.deltaTime);
+				} 
+                currentWaypoint = path[targetIndex];           
+            }
+            stopMoving = false;           
+            transform.rotation = Quaternion.LookRotation(currentWaypoint - transform.position); 
+            transform.position = Vector3.MoveTowards(transform.position,currentWaypoint,speed * Time.deltaTime);
 			yield return null;
 
 		}
-	}
-
-    private void GetInteraction()
-    {
-        Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit interactionInfo;
-        if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
-        {
-            target = interactionInfo.point;
-            RemoveUnitFromUnitManagerMovingUnitsList();
-            PathManager.RequestPath(transform.position, target, OnPathFound);
-
-            //animator.SetFloat(speedId, 3f);
-        }
-    }
-
-    private void RemoveUnitFromUnitManagerMovingUnitsList()
-    {
-        if (UnitManager.instance.movingUnits.Count > 0)
-        {
-            for (int i = 0; i < UnitManager.instance.movingUnits.Count; i++)
-            {
-                if (this.gameObject == UnitManager.instance.movingUnits[i])
-                {
-                    UnitManager.instance.movingUnits.Remove(UnitManager.instance.movingUnits[i]);
-                }
-            }
-        }
-    }
+	} 
 
     public void OnDrawGizmos()
     {
@@ -177,4 +162,19 @@ public class Unit : MonoBehaviour {
 			}
 		}
 	}
+
+
+    public void RemoveUnitFromUnitManagerMovingUnitsList()
+    {
+        if (UnitManager.instance.movingUnits.Count > 0)
+        {
+            for (int i = 0; i < UnitManager.instance.movingUnits.Count; i++)
+            {
+                if (this.gameObject == UnitManager.instance.movingUnits[i])
+                {
+                    UnitManager.instance.movingUnits.Remove(UnitManager.instance.movingUnits[i]);
+                }
+            }
+        }
+    }
 }

@@ -16,8 +16,10 @@ public class Grid : MonoBehaviour
 	float nodeDiameter;
 	int gridSizeX, gridSizeY;
 
+	public static Grid instance;
 	void Awake()
 	{
+		instance = this;
 		nodeDiameter = nodeRadius * 2;
 		//nodes that fit into world size x and y
 		gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
