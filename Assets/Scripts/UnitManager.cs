@@ -6,10 +6,6 @@ public class UnitManager : MonoBehaviour
 {
     public static UnitManager instance;
 
-    //gameObject
-    public GameObject tileTestCorner;
-    public GameObject tileTestEdges;
-
     //vector3
     public Vector3 originalRightClickTarget;
     public Vector3 newTemp;

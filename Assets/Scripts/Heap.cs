@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine; 
 using System;
 
-//use like a list
-
 
 //T impliments interface IHeapItem
 public class Heap<T> where T : IHeapItem<T> 
