@@ -25,7 +25,6 @@ public class Unit : MonoBehaviour
         empty,
         findPosition,
         recalculatePath,
-		move,
         moveToTarget
     }
 
@@ -52,7 +51,7 @@ public class Unit : MonoBehaviour
                 {
                     RemoveUnitFromUnitManagerMovingUnitsList();
                     PathManager.RequestPath(transform.position, target, OnPathFound);
-                    moveFSM = MoveFSM.move; 
+                    moveFSM = MoveFSM.empty; 
                 }
                 break;
 
@@ -63,13 +62,13 @@ public class Unit : MonoBehaviour
                     {
                         stopMoving = false;
                         FindClosestWalkableNode(targetNode);
-                        moveFSM = MoveFSM.move;
+                        moveFSM = MoveFSM.empty;
                     }
                     else if (targetNode.walkable == true)
                     {
                         stopMoving = false;
                         PathManager.RequestPath(transform.position, target, OnPathFound);
-                        moveFSM = MoveFSM.move;
+                        moveFSM = MoveFSM.empty;
                     }
                 }
                 break;
@@ -90,7 +89,7 @@ public class Unit : MonoBehaviour
             UnitManager.instance.movingUnits.Add(this.gameObject);
             StopCoroutine("FollowPath");
 			StartCoroutine("FollowPath");
-            moveFSM = MoveFSM.move; 
+            moveFSM = MoveFSM.empty; 
 		}
 	}
 
@@ -107,7 +106,7 @@ public class Unit : MonoBehaviour
                 comparisonNode = incrementedNode;
                 target = comparisonNode.nodeWorldPosition;
                 PathManager.RequestPath(transform.position, target, OnPathFound);
-                moveFSM = MoveFSM.move;
+                moveFSM = MoveFSM.empty;
                 break;
             }
         }

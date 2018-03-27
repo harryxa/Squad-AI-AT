@@ -37,7 +37,7 @@ public class UnitManager : MonoBehaviour
 
     private void Start()
     {
-		//finds all unts at awake and adds toa list
+		//finds all unts at awake and adds to a list
         for (int i = 0; i < GameObject.FindGameObjectsWithTag("Unit").Length; i++)
         {
             units.Add(GameObject.FindGameObjectsWithTag("Unit")[i]);
@@ -149,7 +149,7 @@ public class UnitManager : MonoBehaviour
             topLeft.z = (startingPos.z + cornerIncrementer);
             topLeft.y = .01f; 
        
-			//potetntial list of places that are available
+			//list of potential places that are available
             listOfVectors.Add(topLeft); 
 
             EdgeMaker(sideIncrement, topLeft, 1, 0);
